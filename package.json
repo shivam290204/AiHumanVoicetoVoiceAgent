@@ -1,0 +1,25 @@
+{
+  "name": "production-ai-voice-agent",
+  "version": "1.0.0",
+  "description": "A modular realtime-style AI voice agent with browser audio capture, VAD, STT, LLM, TTS, barge-in, session management, tests, and provider adapters.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node backend/server.js",
+    "test": "node --test backend/tests/*.test.js",
+    "check": "node --check backend/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "voice-agent",
+    "stt",
+    "tts",
+    "llm",
+    "vad"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.21.3"
+  }
+}

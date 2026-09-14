@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VOCALIS.AI | Tactical Interface</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+      <div class="nav-left">
+        <div class="logo">
+          <div class="logo-icon">
+            <div class="logo-inner"></div>
+          </div>
+          <span class="logo-text">VOCALIS.AI</span>
+        </div>
+        <div class="nav-links">
+          <a href="#" class="active">STUDIO</a>
+          
+        </div>
+      </div>
+      <div class="nav-right">
+        <div class="status-badge status-connected">
+          <span class="dot"></span> CONNECTED <span class="dim">|</span> 12ms
+        </div>
+        
+        <div class="status-badge dim">
+          PCM 24KHZ
+        </div>
+        <div class="avatar"></div>
+      </div>
+    </nav>
+
+    <!-- Sub header bar -->
+    <div class="sub-header">
+      <div class="badge-dark">LIVE DUPLEX CALL</div>
+      <div class="page-title">DUPLEX VOICE AGENT // CONVERSATIONAL CHAT INTERFACE</div>
+      <div class="sub-badges">
+        <div class="mini-badge">DATACHANNEL: <span class="blue">OPEN</span></div>
+        <div class="mini-badge" id="sessionLabel">SESSION IDLE</div>
+        <div class="mini-badge yellow">
+          <span class="icon-timer"></span> <span id="timerLabel">00:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <main class="grid-layout">
+      <!-- Left Column (Chat + Controls) -->
+      <div class="left-col">
+        <!-- Chat Panel -->
+        <div class="panel chat-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="bars-icon">|||</span> REAL-TIME SPEECH STREAM // LIVE TRANSCRIPTION
+            </div>
+            <div class="panel-actions">
+              <span class="mini-badge blue">● 24 TOKENS/SEC</span>
+              <span class="mini-text">↓ AUTOSCROLL ON</span>
+            </div>
+          </div>
+          <div class="chat-viewport" id="messages">
+            <!-- Messages injected here -->
+          </div>
+          <div class="chat-footer">
+            <div class="badge-yellow">MIC BUFFER</div>
+            <div class="footer-status" id="stateLabel">Idle. Press SPACE to start.</div>
+            <div class="audio-meter">
+               <div class="meter-bar"></div>
+               <div class="meter-bar"></div>
+               <div class="meter-bar active"></div>
+               <div class="meter-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Master Console (Bottom Left) -->
+        <div class="panel console-panel">
+          <div class="panel-header bare">
+            <div class="panel-title sm">AUDIO MASTER CONSOLE // HARDWARE CONTROL</div>
+            <div class="panel-title sm">PHYSICAL KEYPAD SHORTCUTS</div>
+          </div>
+          <div class="console-buttons">
+            <button class="btn-tactical btn-yellow" id="startButton">
+              <div class="btn-top">
+                <span class="icon-mic-large">🎙</span>
+                <span class="btn-key">SPACEBAR</span>
+              </div>
+              <div class="btn-title">[PRESS SPACE] START SESSION</div>
+              <div class="btn-sub">CONTINUOUS VOICE STREAM TO NEURAL PIPELINE</div>
+            </button>
+            <button class="btn-tactical btn-red" id="interruptButton" disabled>
+              <div class="btn-top">
+                <span class="icon-hand">✋</span>
+                <span class="btn-key">ESC</span>
+              </div>
+              <div class="btn-title">INTERRUPT</div>
+              <div class="btn-sub">FLUSH AGENT BUFFER</div>
+            </button>
+            <button class="btn-tactical btn-white" id="stopButton" disabled>
+              <div class="btn-top">
+                <span class="icon-pause">⏸</span>
+                <span class="btn-key-yellow">ACTIVE</span>
+              </div>
+              <div class="btn-title">END SESSION</div>
+              <div class="btn-sub">DISCONNECT VOICE PIPELINE</div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column (Sidebar) -->
+      <div class="right-col">
+        <div class="panel sidebar-panel">
+          <div class="sidebar-header">
+            <div>
+              <div class="panel-title large">VOICE SYNTHESIS & ACOUSTIC PROFILE</div>
+              <div class="panel-sub">NEURAL SPEECH SYNTHESIZER V4</div>
+            </div>
+            <div class="badge-blue">ONLINE</div>
+          </div>
+          
+          <div class="section-title">ACTIVE SYNTHESIZER MODEL</div>
+          <div class="voice-list" id="voiceList">
+            <div class="voice-card active" data-voice="female">
+              <div class="voice-checkbox">■</div>
+              <div class="voice-info">
+                <div class="voice-name">NOVA <span class="tag">FEMALE</span></div>
+                <div class="voice-desc">Energetic, high-tempo, natural cadence</div>
+              </div>
+            </div>
+            <div class="voice-card" data-voice="male">
+              <div class="voice-checkbox">□</div>
+              <div class="voice-info">
+                <div class="voice-name">ECHO <span class="tag">MALE</span></div>
+                <div class="voice-desc">Warm, conversational, empathetic</div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="global-footer">
+      <div class="footer-left">
+        <span class="badge-grey">QUICK TACTILE KEYS:</span>
+        <span class="key">SPACE</span> <span class="dim">- Push To Talk</span>
+        <span class="key">ESC</span> <span class="dim">- Instant Agent Interrupt</span>
+      </div>
+      <div class="footer-right">
+        <span class="blue">● VAD AUTO-SQUELCH ON</span>
+      </div>
+    </footer>
+
+    <div class="bottom-brand">
+      <div class="brand-left">VOCALIS.AI // BAUHAUS ARCHITECTURE <span class="dim">WEBRTC V2.4</span></div>
+      <div class="brand-right dim">BUFFERS: STEREO DUPLEX &nbsp; LATENCY: ULTRA-LOW &nbsp; <strong>© 2024</strong></div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
