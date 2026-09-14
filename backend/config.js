@@ -40,6 +40,17 @@ function createConfig() {
       apiKey: process.env.GEMINI_API_KEY || '',
       model: process.env.GEMINI_MODEL || 'gemini-flash-latest'
     },
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY || '',
+      baseUrl: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+      sttModel: process.env.OPENAI_STT_MODEL || 'whisper-1',
+      llmModel: process.env.OPENAI_LLM_MODEL || 'gpt-4o-mini',
+      ttsModel: process.env.OPENAI_TTS_MODEL || 'tts-1',
+      ttsVoiceFemale: process.env.OPENAI_TTS_VOICE_FEMALE || 'sage',
+      ttsVoiceMale: process.env.OPENAI_TTS_VOICE_MALE || 'marin',
+      ttsInstructions: process.env.OPENAI_TTS_INSTRUCTIONS || 'Speak like a warm, relaxed person having a real conversation, not a narrator. Use natural conversational pacing with small pauses and a friendly, unhurried tone.',
+      ttsSpeed: numberEnv('OPENAI_TTS_SPEED', 1.0)
+    },
     defaultVoiceGender: process.env.DEFAULT_VOICE_GENDER || 'female',
     maxHistoryMessages: numberEnv('MAX_HISTORY_MESSAGES', 16),
     requestTimeoutMs: numberEnv('REQUEST_TIMEOUT_MS', 30000)

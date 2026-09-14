@@ -27,15 +27,16 @@ Set providers in `.env`:
 - `mock`: deterministic offline provider for local development and tests.
 - `openai`: OpenAI-compatible HTTP adapters for STT, LLM, and TTS.
 
-The provider boundary lives in `src/providers/index.js`, so STT, LLM, or TTS can be replaced independently.
+The provider boundary lives in `backend/providers/index.js`, so STT, LLM, or TTS can be replaced independently.
 
 ## Setup
 
-No dependency installation is required.
+Install dependencies and start the server:
 
 ```bash
+npm install
 cp .env.example .env
-node src/server.js
+node backend/server.js
 ```
 
 Open `http://127.0.0.1:8787`.
@@ -70,8 +71,8 @@ For a large deployment, put this server behind TLS, move sessions to Redis or a 
 ## Folder Structure
 
 ```text
-public/                 Browser UI and client audio pipeline
-src/
+frontend/               Browser UI and client audio pipeline
+backend/
   audio/                VAD utilities
   conversation/         Prompting and history management
   pipeline/             Voice turn orchestration
@@ -79,5 +80,5 @@ src/
   session/              Session lifecycle and interruption state
   config.js             Environment management
   server.js             HTTP server and API routes
-tests/                  Node test suite
+  tests/                Node test suite
 ```

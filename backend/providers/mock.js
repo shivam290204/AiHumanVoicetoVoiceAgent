@@ -8,8 +8,14 @@ class MockSttProvider {
     if (!audioBuffer || audioBuffer.length < 64) {
       return { text: '', confidence: 0, partial: false };
     }
+    const options = [
+      'Hello, I would like to have a natural voice conversation.',
+      'Could you explain how rice is cooked?',
+      'Please tell me about something interesting.'
+    ];
+    const text = options[audioBuffer.length % options.length];
     return {
-      text: 'Hello, I would like to have a natural voice conversation.',
+      text,
       confidence: 0.99,
       partial: false
     };
@@ -80,7 +86,7 @@ function createLocalAssistantReply(text, messages = []) {
     return 'You are welcome.';
   }
 
-  return 'I am running in local fallback mode, so I can handle simple conversation and a few common tasks. For a fully intelligent assistant, add an API key and set the LLM provider to OpenAI.';
+  return 'I am running in local fallback mode, so I can handle simple conversation and a few common tasks. For a fully intelligent assistant, add an API key and set the LLM provider to Gemini or OpenAI.';
 }
 
 function extractName(text) {

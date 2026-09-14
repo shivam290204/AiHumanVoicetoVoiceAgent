@@ -32,7 +32,8 @@ const ui = {
   micStatus: document.querySelector('#micStatus'),
   messages: document.querySelector('#messages'),
   session: document.querySelector('#sessionLabel'),
-  voiceButtons: [...document.querySelectorAll('.voice-card')]
+  voiceButtons: [...document.querySelectorAll('.voice-card')],
+  languageSelect: document.querySelector('#languageSelect')
 };
 
 let startTimeMs = 0;
@@ -195,7 +196,7 @@ function startBrowserSpeechRecognition() {
   const recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = true;
-  recognition.lang = navigator.language || 'en-US';
+  recognition.lang = ui.languageSelect ? ui.languageSelect.value : (navigator.language || 'en-US');
 
   recognition.onspeechstart = () => {
     if (speechSynthesis.speaking) interruptAgent();
@@ -276,7 +277,7 @@ async function sendTextTurn(transcript) {
     state.ws.send(JSON.stringify({
       type: 'text_turn',
       transcript: normalized,
-      synthesize: false
+      synthesize: true
     }));
   } else {
     state.isProcessing = false;
@@ -396,10 +397,14 @@ function speakWithBrowser(text) {
 }
 
 function pickBrowserVoice(voices, voiceGender) {
-  const englishVoices = voices.filter((voice) => /^en[-_]/i.test(voice.lang));
-  const pool = englishVoices.length ? englishVoices : voices;
-  const femaleHints = ['female', 'woman', 'zira', 'jenny', 'aria', 'samantha', 'susan'];
-  const maleHints = ['male', 'man', 'david', 'guy', 'mark', 'george', 'ryan'];
+  const selectedLang = ui.languageSelect ? ui.languageSelect.value : 'en-US';
+  const langPrefix = selectedLang.split('-')[0].toLowerCase();
+  
+  let pool = voices.filter((voice) => voice.lang.toLowerCase().startsWith(langPrefix));
+  if (pool.length === 0) pool = voices;
+
+  const femaleHints = ['female', 'woman', 'zira', 'jenny', 'aria', 'samantha', 'susan', 'kalpana', 'swara'];
+  const maleHints = ['male', 'man', 'david', 'guy', 'mark', 'george', 'ryan', 'hemant', 'madhur'];
   const hints = voiceGender === 'male' ? maleHints : femaleHints;
   return pool.find((voice) => hints.some((hint) => voice.name.toLowerCase().includes(hint))) || pool[0] || null;
 }
