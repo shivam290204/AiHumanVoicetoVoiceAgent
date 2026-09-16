@@ -1,84 +1,98 @@
-# Production AI Voice Agent
+# VOCALIS.AI Voice-to-Voice Agent
 
-This project is a complete, modular AI voice-agent scaffold that runs without external npm packages. It includes browser microphone capture, client-side VAD, interruption/barge-in behavior, session lifecycle management, STT/LLM/TTS provider adapters, mock providers for offline testing, error handling, logging, tests, and documentation.
+A real-time, low-latency, conversational AI Voice Agent leveraging the official **OpenAI Realtime API** via **WebRTC**.
 
-## Architecture
+## Architecture Upgrade (v2.0)
+This project has been migrated from a sequential Node.js architecture to a robust, asynchronous **Python FastAPI** backend using true **WebRTC**.
 
-The browser supports two operating modes:
+### Why WebRTC?
+Instead of capturing audio, sending it to a server, waiting for transcription, sending it to an LLM, generating TTS, and streaming it back (which causes immense latency), we now use OpenAI's **Ephemeral Tokens**.
 
-- Local browser speech mode: used when STT or TTS is set to `mock`. It uses the browser's built-in speech recognition and speech synthesis, so you can actually talk and hear responses without API keys.
-- Provider mode: used when STT, LLM, and TTS are configured for real providers. It records audio with `MediaRecorder`, watches speaking state with a Web Audio VAD loop, and sends speech turns to the server.
+1. The browser requests an Ephemeral Token from our FastAPI backend.
+2. The browser establishes a direct WebRTC `RTCPeerConnection` to OpenAI's edge servers.
+3. Audio flows bidirectionally with sub-500ms latency.
+4. If the AI needs to query the database (RAG), OpenAI sends a Tool Call over the WebRTC Data Channel to the browser, which proxies it to the FastAPI backend, keeping all secure logic on your server!
 
-The server pipeline is:
+---
 
-1. Session manager creates or resumes a voice session.
-2. STT provider transcribes the user audio.
-3. Conversation manager adds the user message and builds compact context.
-4. LLM provider generates a voice-first response.
-5. TTS provider synthesizes male or female speech.
-6. The response audio is returned to the browser for playback.
+## Technology Stack
 
-The UI supports barge-in: if the user starts speaking while the AI is playing, playback is stopped and the agent immediately listens for the next turn.
+### Backend
+* **Python 3.11+**
+* **FastAPI** & Uvicorn (REST API)
+* **SQLAlchemy** (Database ORM, ready for Postgres)
+* **ChromaDB** (Local Vector Database for RAG)
+* **Pytest** (Testing)
 
-## Providers
+### Frontend
+* Vanilla HTML5 / CSS3 / JavaScript
+* WebRTC (`RTCPeerConnection` and `RTCDataChannel`)
+* Native MediaDevices API
 
-Set providers in `.env`:
-
-- `mock`: deterministic offline provider for local development and tests.
-- `openai`: OpenAI-compatible HTTP adapters for STT, LLM, and TTS.
-
-The provider boundary lives in `backend/providers/index.js`, so STT, LLM, or TTS can be replaced independently.
-
-## Setup
-
-Install dependencies and start the server:
-
-```bash
-npm install
-cp .env.example .env
-node backend/server.js
-```
-
-Open `http://127.0.0.1:8787`.
-
-To use real OpenAI-compatible providers instead of browser speech mode, put your key in `.env` and set:
-
-```bash
-STT_PROVIDER=openai
-LLM_PROVIDER=openai
-TTS_PROVIDER=openai
-OPENAI_API_KEY=your_key_here
-```
-
-Never commit `.env`.
-
-## Run Tests
-
-```bash
-node --test tests/*.test.js
-```
-
-Tests cover VAD, conversation context, provider failure behavior, session lifecycle, voice pipeline success, and interruption state.
-
-## Browser Notes
-
-Local browser speech mode works best in Chrome or Edge because they expose the Web Speech recognition API. Browser speech voices come from your operating system, so exact male and female voice names vary by machine.
-
-## Production Notes
-
-For a large deployment, put this server behind TLS, move sessions to Redis or a database, add per-user authentication, rate limits, metrics, request tracing, and streaming WebSocket transport. The current implementation keeps the architecture provider-ready and testable while avoiding third-party package installation in this workspace.
+---
 
 ## Folder Structure
 
-```text
-frontend/               Browser UI and client audio pipeline
-backend/
-  audio/                VAD utilities
-  conversation/         Prompting and history management
-  pipeline/             Voice turn orchestration
-  providers/            STT, LLM, TTS adapters
-  session/              Session lifecycle and interruption state
-  config.js             Environment management
-  server.js             HTTP server and API routes
-  tests/                Node test suite
+```
+├── backend/
+│   ├── app/
+│   │   ├── api/          # FastAPI Routers (realtime, tools)
+│   │   ├── conversation/ # System Prompts & Persona
+│   │   ├── database/     # SQLAlchemy Models & Session
+│   │   ├── rag/          # Vector Search Engine (Chroma)
+│   │   ├── services/     # OpenAI Ephemeral Token generation
+│   │   └── tools/        # Tool Registry
+│   ├── tests/            # Pytest test suite
+│   ├── requirements.txt
+│   └── main.py
+├── frontend/
+│   ├── index.html
+│   ├── app.js            # WebRTC logic
+│   └── styles.css
+└── .env                  # Configuration
+```
+
+---
+
+## Local Setup
+
+### 1. Environment Variables
+Copy the example config:
+```bash
+cp .env.example .env
+```
+Open `.env` and add your real `OPENAI_API_KEY`. You **must** have a funded OpenAI account to use the Realtime API (`gpt-4o-realtime-preview-2024-12-17`).
+
+### 2. Install Python Dependencies
+It's recommended to use a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r backend/requirements.txt
+```
+
+### 3. Run the Backend & Frontend
+FastAPI serves the frontend statically on the same port!
+```bash
+python backend/app/main.py
+```
+Open `http://127.0.0.1:8787` in your browser.
+
+---
+
+## Advanced Features
+
+### RAG (Retrieval-Augmented Generation) & Tools
+The system includes a fully modular Tool Registry (`backend/app/tools/registry.py`).
+By default, the AI is equipped with a `retrieve_company_knowledge` tool connected to ChromaDB.
+When a user asks a company-specific question, the AI autonomously requests a database lookup, retrieving the relevant chunks and responding naturally without missing a beat in the voice conversation.
+
+### Authentication & Production
+- **Ephemeral Tokens**: The architecture ensures your `OPENAI_API_KEY` is completely hidden from the browser.
+- **Database**: We use SQLite by default for easy local testing, but you can instantly switch to Postgres by changing the `DATABASE_URL` in `.env`.
+
+### Testing
+Run tests using:
+```bash
+pytest backend/tests/
 ```
